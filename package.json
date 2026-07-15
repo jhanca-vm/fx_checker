@@ -1,0 +1,28 @@
+{
+  "name": "fx_checker",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "rspack dev",
+    "build": "rspack build",
+    "preview": "rspack preview"
+  },
+  "dependencies": {
+    "@fontsource-variable/jetbrains-mono": "5.2.8",
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
+  },
+  "devDependencies": {
+    "@rspack/cli": "2.1.4",
+    "@rspack/core": "2.1.4",
+    "@rspack/dev-server": "2.1.0",
+    "@rspack/plugin-react-refresh": "2.0.2",
+    "@svgr/webpack": "8.1.0",
+    "@swc/core": "1.15.43",
+    "@tailwindcss/postcss": "4.3.2",
+    "oxfmt": "0.59.0",
+    "oxlint": "1.74.0",
+    "postcss-loader": "8.2.1",
+    "tailwindcss": "4.3.2"
+  }
+}
