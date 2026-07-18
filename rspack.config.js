@@ -1,5 +1,5 @@
 import { defineConfig } from '@rspack/cli'
-import { HtmlRspackPlugin } from '@rspack/core'
+import { CopyRspackPlugin, HtmlRspackPlugin } from '@rspack/core'
 import { ReactRefreshRspackPlugin } from '@rspack/plugin-react-refresh'
 
 import JsxRspackPlugin from './jsx-rspack-plugin'
@@ -7,12 +7,13 @@ import JsxRspackPlugin from './jsx-rspack-plugin'
 const isDev = process.env.NODE_ENV === 'development'
 
 export default defineConfig({
-  devServer: { watchFiles: ['app/layout.jsx', 'app/favicon.svg'] },
+  devServer: { watchFiles: 'app/layout.jsx' },
   entry: './app/main.jsx',
   module: {
     rules: [
       {
-        test: /\.jsx$/,
+        resolve: { fullySpecified: false },
+        test: /\.(?:js|jsx)$/,
         use: {
           loader: 'builtin:swc-loader',
           /** @type {import('@rspack/core').SwcLoaderOptions} */
@@ -51,7 +52,8 @@ export default defineConfig({
   plugins: [
     new HtmlRspackPlugin(),
     JsxRspackPlugin,
-    isDev && new ReactRefreshRspackPlugin()
+    isDev && new ReactRefreshRspackPlugin(),
+    new CopyRspackPlugin({ patterns: [{ from: 'public' }] })
   ],
   resolve: { extensions: ['...', '.jsx'] }
 })

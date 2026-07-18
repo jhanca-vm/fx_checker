@@ -6,6 +6,6 @@
   "singleQuote": true,
   "sortImports": true,
   "sortPackageJson": true,
-  "sortTailwindcss": true,
+  "sortTailwindcss": { "functions": ["clsx"] },
   "trailingComma": "none"
 }
