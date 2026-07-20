@@ -1,3 +1,4 @@
+import { RsdoctorRspackPlugin } from '@rsdoctor/rspack-plugin'
 import { defineConfig } from '@rspack/cli'
 import { CopyRspackPlugin, HtmlRspackPlugin } from '@rspack/core'
 import { ReactRefreshRspackPlugin } from '@rspack/plugin-react-refresh'
@@ -49,11 +50,20 @@ export default defineConfig({
       }
     ]
   },
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+      cacheGroups: {
+        reactDom: { test: /[\\/]node_modules[\\/]react-dom[\\/]/ }
+      }
+    }
+  },
   plugins: [
     new HtmlRspackPlugin(),
     JsxRspackPlugin,
     isDev && new ReactRefreshRspackPlugin(),
-    new CopyRspackPlugin({ patterns: [{ from: 'public' }] })
-  ],
+    new CopyRspackPlugin({ patterns: [{ from: 'public' }] }),
+    process.env.RSDOCTOR && new RsdoctorRspackPlugin()
+  ].filter(Boolean),
   resolve: { extensions: ['...', '.jsx'] }
 })
