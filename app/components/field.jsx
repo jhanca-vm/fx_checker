@@ -25,7 +25,7 @@ export default function Field({
     <div
       className={clsx(
         'grid grid-cols-[1fr_auto] items-center gap-5 rounded-2xl',
-        'bg-neutral-600 p-4 ring ring-neutral-500 sm:p-5'
+        'bg-neutral-600 p-4 ring ring-neutral-500 ring-inset sm:p-5'
       )}
     >
       <label

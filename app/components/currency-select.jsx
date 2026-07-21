@@ -23,7 +23,7 @@ export default function CurrencySelect({ value, onChange }) {
         className={clsx(
           'flex items-center gap-2 rounded-lg bg-neutral-500 p-2.5 ring',
           'ring-neutral-400 outline-1 outline-offset-3 outline-transparent',
-          'transition-colors hover:bg-neutral-400',
+          'transition-colors ring-inset hover:bg-neutral-400',
           'focus-visible:outline-lime-500'
         )}
         type="button"
@@ -42,7 +42,8 @@ export default function CurrencySelect({ value, onChange }) {
               ref={floating.refs.setFloating}
               className={clsx(
                 'mt-5 grid max-h-64 scrollbar-thin overflow-auto rounded-l-lg',
-                'bg-neutral-600 p-2 ring ring-neutral-400 outline-0 md:mt-2.5'
+                'border border-neutral-400 bg-neutral-600 p-2 shadow-xl',
+                'outline-0 md:mt-2.5'
               )}
               style={floating.floatingStyles}
               {...interactions.getFloatingProps()}

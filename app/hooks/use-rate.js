@@ -1,117 +1,58 @@
-import { useQuery } from '@tanstack/react-query'
-import { useEffect, useEffectEvent, useReducer } from 'react'
+import { create } from 'zustand'
 
-import { getRate } from '../api'
+/** @typedef {import('../constants').CURRENCIES[number]} Currency */
 
-/**
- * @typedef {import('../constants').CURRENCIES[number]} Currency
- *
- * @typedef {{ isoCode: Currency; amount: string }} Money
- */
+/** @typedef {'base' | 'quote'} Side */
 
 /**
- * @param {{ base: Money; quote: Money; rate: number }} state
- * @param {{
- *   type:
- *     | 'rate_changed'
- *     | 'amount_changed'
- *     | 'currencies_swapped'
- *     | 'iso_code_changed'
- *   source: 'base' | 'quote'
- *   payload: string | number
- * }} action
+ * @typedef {import('zustand').StoreApi<{
+ *   baseCurrency: Currency
+ *   baseAmount: string
+ *   quoteCurrency: Currency
+ *   quoteAmount: string
+ *   setCurrency: (side: Side, currency: Currency) => void
+ *   setAmount: (side: Side, amount: string, rate?: number) => void
+ *   swapCurrencies: () => void
+ * }>} State
  */
-function reducer(state, action) {
-  const newState = structuredClone(state)
 
-  if (action.type === 'rate_changed') {
-    newState.rate = action.payload
-  }
+/** @type {import('zustand').UseBoundStore<State>} */
+const useRate = create(set => ({
+  baseCurrency: 'USD',
+  baseAmount: '1.00',
+  quoteCurrency: 'COP',
+  quoteAmount: '',
+  setAmount(side, amount, rate) {
+    set(() => {
+      if (!rate) return { [`${side}Amount`]: amount }
 
-  if (action.type === 'amount_changed') {
-    newState[action.source].amount = action.payload
+      const amountAsNumber = Number(amount) || 0
 
-    if (state.rate) {
-      const payload = Number(action.payload) || 0
-
-      switch (action.source) {
+      switch (side) {
         case 'base':
-          newState.quote.amount = (payload * state.rate).toFixed(2)
-          break
+          return {
+            baseAmount: amount,
+            quoteAmount: (amountAsNumber * rate).toFixed(2)
+          }
         case 'quote':
-          newState.base.amount = (payload / state.rate).toFixed(2)
+          return {
+            baseAmount: (amountAsNumber / rate).toFixed(2),
+            quoteAmount: amount
+          }
       }
-    }
+    })
+  },
+  setCurrency(side, currency) {
+    set({ [`${side}Currency`]: currency, quoteAmount: '' })
+  },
+  swapCurrencies() {
+    set(state => ({
+      baseCurrency: state.quoteCurrency,
+      baseAmount: state.quoteAmount,
+      quoteCurrency: state.baseCurrency,
+      quoteAmount: ''
+    }))
   }
+}))
 
-  if (action.type === 'currencies_swapped') {
-    newState.rate = 0
-    newState.base.amount = state.quote.amount
-    newState.base.isoCode = state.quote.isoCode
-    newState.quote.amount = ''
-    newState.quote.isoCode = state.base.isoCode
-  }
-
-  if (action.type === 'iso_code_changed') {
-    newState.rate = 0
-    newState[action.source].isoCode = action.payload
-    newState.quote.amount = ''
-  }
-
-  return newState
-}
-
-export default function useRate() {
-  const [state, dispatch] = useReducer(reducer, {
-    base: { isoCode: 'USD', amount: '1.00' },
-    quote: { isoCode: 'COP', amount: '' },
-    rate: 0
-  })
-
-  const { data: rate, isLoading } = useQuery({
-    queryKey: ['rate', state.base.isoCode, state.quote.isoCode],
-    queryFn: () => getRate(state.base.isoCode, state.quote.isoCode)
-  })
-
-  const onSuccess = useEffectEvent(rate => {
-    if (rate) {
-      dispatch({
-        type: 'amount_changed',
-        source: 'quote',
-        payload: (Number(state.base.amount) * rate).toFixed(2)
-      })
-
-      dispatch({ type: 'rate_changed', payload: rate })
-    }
-  })
-
-  /**
-   * @param {'base' | 'quote'} source
-   * @param {string} value
-   */
-  function handleAmountChange(source, value) {
-    dispatch({ type: 'amount_changed', source, payload: value })
-  }
-
-  function handleCurrenciesSwap() {
-    dispatch({ type: 'currencies_swapped' })
-  }
-
-  /**
-   * @param {'base' | 'quote'} source
-   * @param {Currency} value
-   */
-  function handleIsoCodeChange(source, value) {
-    dispatch({ type: 'iso_code_changed', source, payload: value })
-  }
-
-  useEffect(() => onSuccess(rate), [rate])
-
-  return {
-    state,
-    isLoading,
-    handleAmountChange,
-    handleCurrenciesSwap,
-    handleIsoCodeChange
-  }
-}
+export default useRate

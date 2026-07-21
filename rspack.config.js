@@ -54,7 +54,8 @@ export default defineConfig({
     splitChunks: {
       chunks: 'all',
       cacheGroups: {
-        reactDom: { test: /[\\/]node_modules[\\/]react-dom[\\/]/ }
+        reactDom: { test: /[\\/]node_modules[\\/]react-dom[\\/]/ },
+        recharts: { test: /[\\/]node_modules[\\/]recharts[\\/]/ }
       }
     }
   },

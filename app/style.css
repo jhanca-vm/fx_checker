@@ -14,6 +14,7 @@
 
 @theme {
   --default-font-family: 'JetBrains Mono';
+  --color-green-500: oklch(82.17% 0.267 140.6);
   --color-lime-500: oklch(91.57% 0.2054 121.64);
   --color-neutral-100: oklch(82.66% 0 0);
   --color-neutral-200: oklch(69.6% 0 0);
@@ -22,9 +23,11 @@
   --color-neutral-600: oklch(24.43% 0.0038 286.12);
   --color-neutral-700: oklch(20.55% 0.0039 286.05);
   --color-neutral-900: oklch(14.48% 0 0);
+  --color-red-500: oklch(66.07% 0.2258 25.95);
   --leading-tight: 1.2;
   --radius-3xl: 1.25rem;
   --shadow-lg: 0 12px 40px rgb(0 0 0 / 0.4);
+  --shadow-xl: 0 20px 60px rgb(0 0 0 / 0.5);
   --text-3xl: 2rem;
   --text-5xl: 2.5rem;
   --tracking-tight: -0.5px;
@@ -40,5 +43,9 @@
   input[type='number']::-webkit-outer-spin-button,
   input[type='number']::-webkit-inner-spin-button {
     appearance: none;
+  }
+
+  .recharts-wrapper * {
+    outline: none;
   }
 }

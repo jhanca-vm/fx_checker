@@ -19,7 +19,7 @@ export default function Layout({ font }) {
         />
       </head>
       <body className="bg-neutral-900 text-white scheme-dark">
-        <div id="root" />
+        <div className="mx-auto max-w-275 px-4 sm:px-6 lg:px-8" id="root" />
       </body>
     </html>
   )
