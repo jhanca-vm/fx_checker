@@ -7,7 +7,7 @@ import { useId } from 'react'
  *   label: string
  *   value: string
  *   disabled?: boolean
- *   children: import('react').ReactNode
+ *   children: React.ReactNode
  *   onChange: (value: string) => void
  * }} props
  */
@@ -46,11 +46,15 @@ export default function Field({
           'not-focus:hover:decoration-neutral-200',
           'focus-visible:outline-lime-500 lg:text-5xl'
         )}
-        type="number"
+        inputMode="decimal"
         id={id}
-        value={value}
+        value={value.replace('.', ',')}
         disabled={disabled}
-        onChange={event => onChange(event.currentTarget.value)}
+        onChange={({ currentTarget: { value } }) => {
+          if (value === '' || /^(?:0|[1-9]\d*)(?:[,.]\d{0,2})?$/.test(value)) {
+            onChange(value && value.replace(',', '.'))
+          }
+        }}
       />
       {children}
     </div>

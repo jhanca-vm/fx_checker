@@ -4,7 +4,7 @@ import clsx from 'clsx/lite'
  * @param {{
  *   className?: string
  *   title: string
- *   value: number | string
+ *   value?: string
  *   isLoading: boolean
  * }} props
  */
@@ -13,7 +13,7 @@ export default function DataPoint({ className, title, value, isLoading }) {
     <div
       className={clsx(
         'rounded-2xl bg-neutral-700 px-5 py-3 ring ring-neutral-600',
-        'ring-inset sm:basis-40'
+        'ring-inset sm:min-w-35'
       )}
     >
       <dt className="text-sm/tight tracking-wider uppercase opacity-70">
@@ -26,7 +26,7 @@ export default function DataPoint({ className, title, value, isLoading }) {
           isLoading && 'animate-pulse bg-neutral-500'
         )}
       >
-        {isLoading ? '' : value}
+        {value}
       </dd>
     </div>
   )

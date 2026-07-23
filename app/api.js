@@ -11,9 +11,25 @@ const BASE_URL = 'https://api.frankfurter.dev/v2/'
  */
 export async function getRate(base, quote) {
   const { href } = new URL(`rate/${base}/${quote}`, BASE_URL)
-  const { rate } = await fetch(href).then(res => res.json())
+  const { rate } = await fetch(href).then(response => response.json())
 
   return rate
+}
+
+/**
+ * @param {Currency} base
+ * @param {Currency[]} quotes
+ * @returns {Promise<{ quote: string; rate: number }[]>}
+ */
+export async function getRates(base, quotes) {
+  const url = new URL('rates', BASE_URL)
+
+  url.searchParams.set('base', base)
+  url.searchParams.set('quotes', quotes.join(','))
+
+  const rates = await fetch(url).then(response => response.json())
+
+  return rates
 }
 
 /**
@@ -32,7 +48,7 @@ export async function getHistoricalRates(base, quote, from, group) {
 
   if (group) url.searchParams.set('group', group)
 
-  const rates = await fetch(url).then(res => res.json())
+  const rates = await fetch(url).then(response => response.json())
 
   return rates
 }

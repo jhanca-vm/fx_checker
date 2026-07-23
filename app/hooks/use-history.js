@@ -1,4 +1,4 @@
-import { addDay, addMonth, addYear, date } from '@formkit/tempo'
+import { addDay, addMonth, addYear } from '@formkit/tempo'
 import { useQuery } from '@tanstack/react-query'
 import { useReducer } from 'react'
 
@@ -21,17 +21,9 @@ function reducer(state, action) {
       case '1M':
         return { timeframe: '1M', date: addMonth(new Date(), -1), group: null }
       case '3M':
-        return {
-          timeframe: '3M',
-          date: addMonth(new Date(), -3),
-          group: 'week'
-        }
+        return { timeframe: '3M', date: addMonth(new Date(), -3), group: null }
       case '1A':
-        return {
-          timeframe: '1A',
-          date: addYear(new Date(), -1),
-          group: 'month'
-        }
+        return { timeframe: '1A', date: addYear(new Date(), -1), group: 'week' }
       case '5A':
         return {
           timeframe: '5A',
@@ -64,25 +56,10 @@ export default function useHistory() {
     }
   })
 
-  console.log(data?.length)
-  const open = data?.at(0).rate
-  const last = data?.at(-1).rate
-  const change = last - open
-  const isPositive = change > 0
-
   /** @param {string} timeframe */
   function setTimeframe(timeframe) {
     dispatch({ type: 'changed_timeframe', timeframe })
   }
 
-  return {
-    timeframe: state.timeframe,
-    data,
-    open,
-    last,
-    change,
-    isPositive,
-    isLoading,
-    setTimeframe
-  }
+  return { timeframe: state.timeframe, data, isLoading, setTimeframe }
 }

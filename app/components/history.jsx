@@ -1,36 +1,43 @@
 import clsx from 'clsx/lite'
 
 import useHistory from '../hooks/use-history'
+import { format } from '../utils/currency'
 import Chart from './chart'
 import DataPoint from './data-point'
 import Timeframe from './timeframe'
 
 export default function History() {
-  const {
-    timeframe,
-    data,
-    open,
-    last,
-    change,
-    isPositive,
-    isLoading,
-    setTimeframe
-  } = useHistory()
+  const { timeframe, data, isLoading, setTimeframe } = useHistory()
+  const open = data?.at(0).rate
+  const last = data?.at(-1).rate
+  const change = last - open
+  const isPositive = change > 0
+  const isNegative = change < 0
 
   return (
     <div className="flex flex-wrap max-lg:flex-col lg:items-center lg:gap-5">
       <dl className="grid grow grid-cols-2 gap-2.5 sm:flex sm:gap-4">
-        <DataPoint title="Apertura" value={open} isLoading={isLoading} />
-        <DataPoint title="Último" value={last} isLoading={isLoading} />
+        <DataPoint
+          title="Apertura"
+          value={open && format(open)}
+          isLoading={isLoading}
+        />
+        <DataPoint
+          title="Último"
+          value={last && format(last)}
+          isLoading={isLoading}
+        />
         <DataPoint
           className={clsx(
             isPositive && 'text-green-500',
-            change < 0 && 'text-red-500'
+            isNegative && 'text-red-500'
           )}
           title="Variación"
           value={
-            (isPositive ? '▲ +' : '▼ ') +
-            `${((change / open) * 100).toFixed(2)}%`
+            isLoading
+              ? undefined
+              : (isPositive ? '▲ +' : isNegative ? '▼ ' : '') +
+                `${format((change / open) * 100)}%`
           }
           isLoading={isLoading}
         />

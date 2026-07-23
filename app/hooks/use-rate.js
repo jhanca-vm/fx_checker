@@ -1,5 +1,7 @@
 import { create } from 'zustand'
 
+import { parse } from '../utils/currency'
+
 /** @typedef {import('../constants').CURRENCIES[number]} Currency */
 
 /** @typedef {'base' | 'quote'} Side */
@@ -26,19 +28,11 @@ const useRate = create(set => ({
     set(() => {
       if (!rate) return { [`${side}Amount`]: amount }
 
-      const amountAsNumber = Number(amount) || 0
-
       switch (side) {
         case 'base':
-          return {
-            baseAmount: amount,
-            quoteAmount: (amountAsNumber * rate).toFixed(2)
-          }
+          return { baseAmount: amount, quoteAmount: parse(amount * rate) }
         case 'quote':
-          return {
-            baseAmount: (amountAsNumber / rate).toFixed(2),
-            quoteAmount: amount
-          }
+          return { baseAmount: parse(amount / rate), quoteAmount: amount }
       }
     })
   },
@@ -48,7 +42,7 @@ const useRate = create(set => ({
   swapCurrencies() {
     set(state => ({
       baseCurrency: state.quoteCurrency,
-      baseAmount: state.quoteAmount,
+      baseAmount: parse(state.quoteAmount),
       quoteCurrency: state.baseCurrency,
       quoteAmount: ''
     }))

@@ -5,5 +5,6 @@ export const CURRENCIES = /** @type {const} */ ([
   'GBP',
   'JPY',
   'CNY',
-  'MXN'
+  'MXN',
+  'INR'
 ])

@@ -4,7 +4,9 @@ import { useEffect, useEffectEvent } from 'react'
 
 import { getRate } from '../api'
 import IconExchange from '../assets/icons/exchange.svg'
+import { CURRENCIES } from '../constants'
 import useRate from '../hooks/use-rate'
+import { format, parse } from '../utils/currency'
 import CurrencySelect from './currency-select'
 import Field from './field'
 
@@ -17,16 +19,16 @@ export default function Rate() {
   const setCurrency = useRate(state => state.setCurrency)
   const swapCurrencies = useRate(state => state.swapCurrencies)
 
-  const { data, isLoading } = useQuery({
+  const { data: rate, isLoading } = useQuery({
     queryKey: ['rate', baseCurrency, quoteCurrency],
     queryFn: () => getRate(baseCurrency, quoteCurrency)
   })
 
-  const onSuccess = useEffectEvent(data => {
-    if (data) setAmount('quote', (Number(baseAmount) * data).toFixed(2))
+  const onSuccess = useEffectEvent(rate => {
+    if (rate) setAmount('quote', parse(baseAmount * rate))
   })
 
-  useEffect(() => onSuccess(data), [data])
+  useEffect(() => onSuccess(rate), [rate])
 
   return (
     <section>
@@ -42,9 +44,12 @@ export default function Rate() {
           <Field
             label="De"
             value={baseAmount}
-            onChange={value => setAmount('base', value, data)}
+            onChange={value => setAmount('base', value, rate)}
           >
             <CurrencySelect
+              currencies={CURRENCIES.filter(
+                currency => currency !== quoteCurrency
+              )}
               value={baseCurrency}
               onChange={value => setCurrency('base', value)}
             />
@@ -69,15 +74,20 @@ export default function Rate() {
             label="Obtengo"
             value={quoteAmount}
             disabled={isLoading}
-            onChange={value => setAmount('quote', value, data)}
+            onChange={value => setAmount('quote', value, rate)}
           >
             <CurrencySelect
+              currencies={CURRENCIES.filter(
+                currency => currency !== baseCurrency
+              )}
               value={quoteCurrency}
               onChange={value => setCurrency('quote', value)}
             />
           </Field>
         </div>
-        <div className="border-t-2 border-dashed border-neutral-500 p-4 sm:p-5">
+        <div
+          className={'border-t-2 border-dashed border-neutral-500 p-4 sm:p-5'}
+        >
           <p className="text-xs/tight tracking-wide max-sm:text-center">
             1 {baseCurrency} ={' '}
             <span
@@ -86,7 +96,7 @@ export default function Rate() {
                 isLoading && 'w-16 animate-pulse bg-neutral-500'
               )}
             >
-              {data || ''}
+              {rate && format(rate)}
             </span>{' '}
             {quoteCurrency}
           </p>

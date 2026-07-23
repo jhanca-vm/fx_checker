@@ -3,17 +3,20 @@ import clsx from 'clsx/lite'
 
 import IconCheck from '../assets/icons/check.svg'
 import IconChevron from '../assets/icons/chevron.svg'
-import { CURRENCIES } from '../constants'
 import useCurrencySelect from '../hooks/use-currency-select'
+import { names } from '../utils/currency'
 import CurrencyFlag from './currency-flag'
+
+/** @typedef {import('../constants').CURRENCIES} Currencies */
 
 /**
  * @param {{
- *   value: CURRENCIES[number]
- *   onChange: (value: CURRENCIES[number]) => void
+ *   currencies: Currencies
+ *   value: Currencies[number]
+ *   onChange: (value: Currencies[number]) => void
  * }} props
  */
-export default function CurrencySelect({ value, onChange }) {
+export default function CurrencySelect({ currencies, value, onChange }) {
   const { floating, interactions, isOpen, listRef, close } = useCurrencySelect()
 
   return (
@@ -42,13 +45,13 @@ export default function CurrencySelect({ value, onChange }) {
               ref={floating.refs.setFloating}
               className={clsx(
                 'mt-5 grid max-h-64 scrollbar-thin overflow-auto rounded-l-lg',
-                'border border-neutral-400 bg-neutral-600 p-2 shadow-xl',
+                'bg-neutral-600 p-2 shadow-xl ring ring-neutral-400',
                 'outline-0 md:mt-2.5'
               )}
               style={floating.floatingStyles}
               {...interactions.getFloatingProps()}
             >
-              {CURRENCIES.map((currency, index) => (
+              {currencies.map((currency, index) => (
                 <button
                   ref={node => (listRef.current[index] = node)}
                   className={clsx(
@@ -57,11 +60,12 @@ export default function CurrencySelect({ value, onChange }) {
                     'hover:ring-neutral-200 focus:ring-lime-500'
                   )}
                   type="button"
+
                   tabIndex={-1}
                   key={currency}
                   {...interactions.getItemProps({
                     onClick() {
-                      onChange(currency)
+                      if (currency !== value) onChange(currency)
                       close()
                     }
                   })}
@@ -71,10 +75,19 @@ export default function CurrencySelect({ value, onChange }) {
                     isoCode={currency}
                     loading="lazy"
                   />
-                  <span className="grow text-left">{currency}</span>
-                  {currency === value && (
-                    <IconCheck className="ml-3 w-3 fill-current" />
-                  )}
+                  <span>{currency}</span>
+                  <span
+                    className={
+                      'text-xs/tight tracking-wide text-neutral-200 capitalize'
+                    }
+                  >
+                    {names.of(currency)}
+                  </span>
+                  <div className="ml-auto w-6">
+                    {currency === value && (
+                      <IconCheck className="ml-3 w-3 fill-current" />
+                    )}
+                  </div>
                 </button>
               ))}
             </nav>
